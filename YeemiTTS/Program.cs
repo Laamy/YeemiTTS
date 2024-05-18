@@ -1,7 +1,9 @@
 using EdgeTTS;
-
+using NAudio.CoreAudioApi;
+using NAudio.Wave;
 using System;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Media;
 
@@ -42,9 +44,9 @@ public class Program
 
             if (result.Code == ResultCode.Success)
             {
-                Console.WriteLine($"msg; {result.Message}");
-                Console.WriteLine($"size; {result.Data.Length}");
-                Console.WriteLine($"code; {result.Code}");
+                //Console.WriteLine($"msg; {result.Message}");
+                //Console.WriteLine($"size; {result.Data.Length}");
+                //Console.WriteLine($"code; {result.Code}");
 
                 result.Data.Seek(0, SeekOrigin.Begin);
 
@@ -55,12 +57,9 @@ public class Program
 
                 //result.Data.Seek(0, SeekOrigin.Begin);
 
-                var player = new MediaPlayer();
-                player.Open(new Uri($"{AppDomain.CurrentDomain.BaseDirectory}\\{path}"));
-                player.Play();
+                PlaySound(path);
 
-                // Wait for playback to finish
-                while (player.Position < player.NaturalDuration) {}
+                File.Delete(path);
 
                 Console.WriteLine($"Saved to: (path)");
             }
@@ -68,5 +67,50 @@ public class Program
         }
 
         Console.ReadKey();
+    }
+
+    public static void PlaySound(string path)
+    {
+        // Get the list of available audio playback devices
+        MMDeviceEnumerator enumerator = new MMDeviceEnumerator();
+        MMDeviceCollection devices = enumerator.EnumerateAudioEndPoints(DataFlow.Render, DeviceState.Active);
+
+        // Find the audio device by name
+        MMDevice outputDevice = devices.FirstOrDefault(d => d.FriendlyName == "CABLE Input (VB-Audio Virtual Cable)");
+
+        if (outputDevice == null)
+        {
+            Console.WriteLine("Could not find the specified audio device.");
+            //return;
+        }
+
+        //Console.ReadKey();
+        int deviceIndex = -1;
+        for (int i = 0; i < devices.Count; i++)
+        {
+            if (devices[i].ID == outputDevice.ID)
+            {
+                deviceIndex = i + 1;
+                break;
+            }
+        }
+
+        //Console.WriteLine(deviceIndex);
+
+        using (var waveOut = new WaveOutEvent())
+        {
+            using (var mp3Reader = new Mp3FileReader(path))
+            {
+                using (var waveStream = WaveFormatConversionStream.CreatePcmStream(mp3Reader))
+                {
+                    waveOut.DeviceNumber = deviceIndex;
+
+                    waveOut.Init(waveStream);
+                    waveOut.Play();
+
+                    while (waveOut.PlaybackState == PlaybackState.Playing) { }
+                }
+            }
+        }
     }
 }
