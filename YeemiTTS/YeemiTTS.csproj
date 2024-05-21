@@ -276,6 +276,10 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Command\CommandBase.cs" />
+    <Compile Include="Command\CommandHandler.cs" />
+    <Compile Include="Command\Commands\PlayCommand.cs" />
+    <Compile Include="Command\Commands\ResetCommand.cs" />
     <Compile Include="OverlayKit\Keymap\KeyEvent.cs" />
     <Compile Include="OverlayKit\Keymap\Keymap.cs" />
     <Compile Include="Program.cs" />
@@ -284,6 +288,15 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup>
+    <Content Include="Soundboard\left_ear.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Soundboard\right_ear.mp3">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.5.5\build\Fody.targets" Condition="Exists('..\packages\Fody.6.5.5\build\Fody.targets')" />

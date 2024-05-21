@@ -16,10 +16,12 @@ public class Program
     public static EdgeTTSClient etts;
     public static Random ran;
 
-    static async Task Main(string[] args)
+    static async Task Main()
     {
         etts = new EdgeTTSClient();
         ran = new Random();
+
+        CommandHandler.Init();
 
         while (true)
         {
@@ -27,11 +29,20 @@ public class Program
 
             string cmd = Console.ReadLine();
 
-            if (cmd == ";reset")
+            string[] args = cmd.Split(' ');
+
+            bool found = false;
+            foreach (var CMD in CommandHandler.Commands)
             {
-                etts = new EdgeTTSClient();
-                continue; // skip synthesis step
+                if (CMD.Name.ToLower() == args[0].ToLower())
+                {
+                    CMD.Execute(args);
+                    found = true;
+                }
             }
+
+            if (found)
+                continue;
 
             var result = await etts.SynthesisAsync(
                 cmd,
