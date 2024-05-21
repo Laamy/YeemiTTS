@@ -10,8 +10,8 @@ using System.Windows.Media;
 public class Program
 {
     public static string Speaker = "en-US-AnaNeural";
-    public static double Pitch = -15;
-    public static double Rate = 0;
+    public static double Pitch = 0;
+    public static double Rate = 20;
 
     public static EdgeTTSClient etts;
     public static Random ran;
@@ -78,24 +78,24 @@ public class Program
         // Find the audio device by name
         MMDevice outputDevice = devices.FirstOrDefault(d => d.FriendlyName == "CABLE Input (VB-Audio Virtual Cable)");
 
+        int deviceIndex = -1;
+        
         if (outputDevice == null)
         {
-            Console.WriteLine("Could not find the specified audio device.");
+            //Console.WriteLine("Could not find the specified audio device.");
             //return;
         }
-
-        //Console.ReadKey();
-        int deviceIndex = -1;
-        for (int i = 0; i < devices.Count; i++)
+        else
         {
-            if (devices[i].ID == outputDevice.ID)
+            for (int i = 0; i < devices.Count; i++)
             {
-                deviceIndex = i + 1;
-                break;
+                if (devices[i].ID == outputDevice.ID)
+                {
+                    deviceIndex = i + 1;
+                    break;
+                }
             }
         }
-
-        //Console.WriteLine(deviceIndex);
 
         using (var waveOut = new WaveOutEvent())
         {

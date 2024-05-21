@@ -276,6 +276,8 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OverlayKit\Keymap\KeyEvent.cs" />
+    <Compile Include="OverlayKit\Keymap\Keymap.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
