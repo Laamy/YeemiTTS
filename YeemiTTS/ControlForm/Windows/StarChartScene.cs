@@ -20,18 +20,17 @@ public partial class StarChartScene : Form
 
     public Color GreenToRedGradient(int index = 0)
     {
-        const int MAX_INDEX = 10; // 10 stars for bright greeen
-        // 0 stars for deep red
+        const int MAX_INDEX = 10;
 
-        var gradientDelta = 239 / ((MAX_INDEX+1)- index);
+        if (index < 0) index = 0;
+        if (index > MAX_INDEX) index = MAX_INDEX;
 
-        var green = 255 * (gradientDelta / 239);
-        return Color.FromArgb(
-            0,
-            255 * (gradientDelta / 239),
-            255 - green,
-            0
-        );
+        var ratio = index / (double)MAX_INDEX;
+
+        var red = (int)(255 * (1 - ratio));
+        var green = (int)(255 * ratio);
+
+        return Color.FromArgb(255, red, green, 0);
     }
 
     public StarChartScene()
@@ -39,18 +38,44 @@ public partial class StarChartScene : Form
         InitializeComponent();
 
         LoadChart();
+        ColourChart();
     }
 
     public bool isValidStar(string str)
-        => str.All(c => c == CHAR_STAR[0]) && str.Length >= 1 && str.Length <= 10;
+        => str.All(c => c == CHAR_STAR[0]) && str.Length >= 1 && str.Length <= 11;
 
     private void dataGridView1_CellValueChanged(object sender, DataGridViewCellEventArgs e)
     {
         if (isLoaded)
+        {
             SaveChart();
+            ColourChart();
+        }
+    }
 
-        // colour stars
+    private void ColourChart()
+    {
+        // each stars roww
+        foreach (DataGridViewRow row in dataGridView1.Rows)
+        {
+            var starsCol = row.Cells[1];
 
+            var stars = "★★★★★";
+
+            if (starsCol.Value != null)
+            {
+                stars = starsCol.Value.ToString() ?? "";
+            }
+
+            if (!isValidStar(stars))
+            {
+                row.Cells[1].Style.ForeColor = Color.Red;
+                continue;
+            }
+
+            var colour = GreenToRedGradient(stars.Length);
+            row.Cells[1].Style.ForeColor = colour;
+        }
     }
 
     private void SaveChart()
